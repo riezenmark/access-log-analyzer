@@ -34,7 +34,7 @@ public class LogAnalyzer implements Analyzer {
                 double responseTime = Double.parseDouble(columns[10]);
 
                 if (serviceFailure(statusCode, responseTime, arguments.getResponseTime())) {
-                    this.failureLines++;
+                    failureLines++;
                     if (serviceIsCurrentlyAvailable) {
                         String startTime = columns[3].split(":", 2)[1];
                         printAvailabilityBorderTime(startTime);
@@ -42,7 +42,7 @@ public class LogAnalyzer implements Analyzer {
                     }
                 } else {
                     if (!serviceIsCurrentlyAvailable) {
-                        this.availableLines++;
+                        availableLines++;
                         double currentAvailabilityLevel = getAvailabilityLevel(availableLines, failureLines);
                         String currentEndTime = columns[3].split(":", 2)[1];
                         if (availabilityLevelIsAcceptable(currentAvailabilityLevel, arguments.getAvailability())) {
