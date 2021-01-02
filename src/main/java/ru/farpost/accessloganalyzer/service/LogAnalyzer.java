@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
 public class LogAnalyzer implements Analyzer {
-    private static final DecimalFormat FORMATTER = new DecimalFormat("#0.0");
+    private static final DecimalFormat FORMATTER = new DecimalFormat("#0,0");
 
     private int availableLines = 0;
     private int failureLines = 0;
