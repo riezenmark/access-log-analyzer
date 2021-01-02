@@ -6,9 +6,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 public class LogAnalyzer implements Analyzer {
-    private static final DecimalFormat FORMATTER = new DecimalFormat("#0,0");
+    private static final DecimalFormat FORMATTER;
+
+    static {
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        FORMATTER = new DecimalFormat("#0.0", dfs);
+    }
 
     private int availableLines = 0;
     private int failureLines = 0;

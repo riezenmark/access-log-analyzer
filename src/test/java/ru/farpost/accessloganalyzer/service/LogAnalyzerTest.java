@@ -60,7 +60,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "01:01:01 02:02:02 50,0\n",
+                "01:01:01 02:02:02 50.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -76,7 +76,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "02:02:02 03:03:03 50,0\n",
+                "02:02:02 03:03:03 50.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -92,7 +92,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "03:03:03 03:03:03 0,0\n",
+                "03:03:03 03:03:03 0.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -108,7 +108,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "01:01:01 03:03:03 33,3\n",
+                "01:01:01 03:03:03 33.3\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -124,7 +124,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "02:02:02 03:03:03 0,0\n",
+                "02:02:02 03:03:03 0.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -140,7 +140,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "01:01:01 03:03:03 33,3\n",
+                "01:01:01 03:03:03 33.3\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -156,7 +156,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "01:01:01 03:03:03 0,0\n",
+                "01:01:01 03:03:03 0.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -190,7 +190,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "01:01:01 02:02:02 50,0\n",
+                "01:01:01 02:02:02 50.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -207,7 +207,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "02:02:02 03:03:03 50,0\n",
+                "02:02:02 03:03:03 50.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -224,7 +224,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "03:03:03 04:04:04 50,0\n",
+                "03:03:03 04:04:04 50.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -241,7 +241,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "04:04:04 04:04:04 0,0\n",
+                "04:04:04 04:04:04 0.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -258,7 +258,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "01:01:01 04:04:04 0,0\n",
+                "01:01:01 04:04:04 0.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -275,7 +275,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "01:01:01 04:04:04 50,0\n",
+                "01:01:01 04:04:04 50.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -292,7 +292,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "02:02:02 04:04:04 33,3\n",
+                "02:02:02 04:04:04 33.3\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -309,7 +309,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "03:03:03 04:04:04 0,0\n",
+                "03:03:03 04:04:04 0.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -326,7 +326,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "01:01:01 04:04:04 50,0\n",
+                "01:01:01 04:04:04 50.0\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -343,7 +343,7 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "02:02:02 04:04:04 33,3\n",
+                "02:02:02 04:04:04 33.3\n",
                 new String(stubOut.toByteArray())
         );
     }
@@ -360,8 +360,8 @@ public class LogAnalyzerTest {
         analyzer.analyze(arguments);
 
         Assert.assertEquals(
-                "01:01:01 02:02:02 50,0\n"
-                        + "04:04:04 04:04:04 0,0\n",
+                "01:01:01 02:02:02 50.0\n"
+                        + "04:04:04 04:04:04 0.0\n",
                 new String(stubOut.toByteArray())
         );
     }
