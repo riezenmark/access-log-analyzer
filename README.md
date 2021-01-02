@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.org/riezenmark/access-log-analyzer.svg?branch=main)](https://travis-ci.org/riezenmark/access-log-analyzer)
