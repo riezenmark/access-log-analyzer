@@ -10,48 +10,50 @@ import java.text.DecimalFormat;
 public class LogAnalyzer implements Analyzer {
     private static final DecimalFormat FORMATTER = new DecimalFormat("#0.0");
 
+    private int availableLines = 0;
+    private int failureLines = 0;
+    private double availabilityLevel = 0;
+    private boolean serviceIsCurrentlyAvailable = true;
+
     public void analyze(final Arguments arguments) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             String line;
-            int availableLines = 0;
-            int failureLines = 0;
-            double availabilityLevel = 0;
+            String[] columns = {};
             String endTime = "";
-            boolean serviceIsCurrentlyAvailable = true;
 
             while ((line = reader.readLine()) != null) {
-                String[] columns = line.split(" ");
+                columns = line.split(" ");
                 String statusCode = columns[8];
                 double responseTime = Double.parseDouble(columns[10]);
 
                 if (serviceFailure(statusCode, responseTime, arguments.getResponseTime())) {
-                    failureLines++;
+                    this.failureLines++;
                     if (serviceIsCurrentlyAvailable) {
-                        printAvailabilityBorderTime(columns[3].split(":", 2)[1]);
+                        String startTime = columns[3].split(":", 2)[1];
+                        printAvailabilityBorderTime(startTime);
                         serviceIsCurrentlyAvailable = false;
                     }
                 } else {
                     if (!serviceIsCurrentlyAvailable) {
-                        availableLines++;
+                        this.availableLines++;
                         double currentAvailabilityLevel = getAvailabilityLevel(availableLines, failureLines);
+                        String currentEndTime = columns[3].split(":", 2)[1];
                         if (availabilityLevelIsAcceptable(currentAvailabilityLevel, arguments.getAvailability())) {
                             printAvailabilityBorderTime(endTime);
                             printFormattedAvailabilityLevel(availabilityLevel);
-                            availableLines = 0;
-                            failureLines = 0;
+                            resetLineCounters();
                             serviceIsCurrentlyAvailable = true;
                         }
                         availabilityLevel = currentAvailabilityLevel;
-                        endTime = columns[3].split(":", 2)[1];
+                        endTime = currentEndTime;
                     }
                 }
             }
             if (!serviceIsCurrentlyAvailable) {
-                printAvailabilityBorderTime(endTime);
-                printFormattedAvailabilityLevel(availabilityLevel);
+                printAvailabilityBorderTime(columns[3].split(":", 2)[1]);
+                printFormattedAvailabilityLevel(getAvailabilityLevel(availableLines, failureLines));
             }
         } catch (IOException ioe) {
-            System.err.println("An error occurred during reading the log.");
             ioe.printStackTrace();
         }
     }
@@ -74,5 +76,10 @@ public class LogAnalyzer implements Analyzer {
 
     private void printFormattedAvailabilityLevel(double availabilityLevel) {
         System.out.println(FORMATTER.format(availabilityLevel));
+    }
+
+    private void resetLineCounters() {
+        this.availableLines = 0;
+        this.failureLines = 0;
     }
 }

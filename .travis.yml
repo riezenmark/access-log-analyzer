@@ -1,0 +1,19 @@
+language: java
+jdk:
+  - openjdk8
+
+sudo: false
+
+env:
+  global:
+    - CODECOV_TOKEN="a0afac16-92f0-4b2f-8d63-fe099a52b46b"
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  email:
+    recipients:
+      - riezenmark@gmail.com
+    on_success: never
+    on_failure: always
