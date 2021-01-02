@@ -33,11 +33,11 @@ public class ArgumentsExtractor {
     }
 
     private static void extractAccessTime(String argument) throws NullPointerException, IllegalArgumentException {
-        double accessTime = Double.parseDouble(argument);
-        if (accessTime <= 0) {
+        double responseTime = Double.parseDouble(argument);
+        if (responseTime <= 0) {
             throw new IllegalArgumentException("-t must be a value greater than 0.");
         } else {
-            arguments.setAccessTime(accessTime);
+            arguments.setResponseTime(responseTime);
         }
     }
 }

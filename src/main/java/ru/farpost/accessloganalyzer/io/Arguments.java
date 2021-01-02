@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class Arguments {
     private double availability;
-    private double accessTime;
+    private double responseTime;
 }
