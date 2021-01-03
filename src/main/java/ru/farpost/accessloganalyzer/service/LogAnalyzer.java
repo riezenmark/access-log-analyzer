@@ -1,32 +1,21 @@
 package ru.farpost.accessloganalyzer.service;
 
 import ru.farpost.accessloganalyzer.io.Arguments;
+import ru.farpost.accessloganalyzer.util.Printer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 
 public class LogAnalyzer implements Analyzer {
-    private static final DecimalFormat FORMATTER;
+    private static final String ERROR_CODE_NUMBER = "5";
 
-    static {
-        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-        dfs.setDecimalSeparator('.');
-        FORMATTER = new DecimalFormat("#0.0", dfs);
-    }
+    private final ServiceState service = new ServiceState();
 
-    private int availableLines = 0;
-    private int failureLines = 0;
-    private double availabilityLevel = 0;
-    private boolean serviceIsCurrentlyAvailable = true;
-
-    public void analyze(final Arguments arguments) {
+    public void analyze(Arguments arguments) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             String line;
             String[] columns = {};
-            String endTime = "";
 
             while ((line = reader.readLine()) != null) {
                 columns = line.split(" ");
@@ -34,59 +23,58 @@ public class LogAnalyzer implements Analyzer {
                 double responseTime = Double.parseDouble(columns[10]);
 
                 if (serviceFailure(statusCode, responseTime, arguments.getResponseTime())) {
-                    failureLines++;
-                    if (serviceIsCurrentlyAvailable) {
-                        String startTime = columns[3].split(":", 2)[1];
-                        printAvailabilityBorderTime(startTime);
-                        serviceIsCurrentlyAvailable = false;
-                    }
-                } else {
-                    if (!serviceIsCurrentlyAvailable) {
-                        availableLines++;
-                        double currentAvailabilityLevel = getAvailabilityLevel(availableLines, failureLines);
-                        String currentEndTime = columns[3].split(":", 2)[1];
-                        if (availabilityLevelIsAcceptable(currentAvailabilityLevel, arguments.getAvailability())) {
-                            printAvailabilityBorderTime(endTime);
-                            printFormattedAvailabilityLevel(availabilityLevel);
-                            resetLineCounters();
-                            serviceIsCurrentlyAvailable = true;
-                        }
-                        availabilityLevel = currentAvailabilityLevel;
-                        endTime = currentEndTime;
-                    }
+                    processServiceFailureLine(columns[3]);
+                } else if (!service.isCurrentlyAvailable()) {
+                    processServiceAvailableLine(arguments, columns[3]);
                 }
             }
-            if (!serviceIsCurrentlyAvailable) {
-                printAvailabilityBorderTime(columns[3].split(":", 2)[1]);
-                printFormattedAvailabilityLevel(getAvailabilityLevel(availableLines, failureLines));
+            if (!service.isCurrentlyAvailable()) {
+                Printer.printAvailabilitySectionBorderTime(columns[3].split(":", 2)[1]);
+                Printer.printAvailabilityLevel(countAvailabilityLevel());
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
-    private boolean serviceFailure(String statusCode, double responseTime, double acceptableResponseTime) {
-        return statusCode.startsWith("5") || responseTime > acceptableResponseTime;
+    private void processServiceAvailableLine(Arguments arguments, String responseDateAndTime) {
+        service.incrementAvailableLineCounter();
+        double currentAvailabilityLevel = countAvailabilityLevel();
+        String currentEndTime = extractCurrentResponseTime(responseDateAndTime);
+        if (availabilityLevelIsAcceptable(currentAvailabilityLevel, arguments.getAvailability())) {
+            Printer.printAvailabilitySectionBorderTime(service.getEndOfCurrentFailureSection());
+            Printer.printAvailabilityLevel(service.getAvailabilityLevel());
+            service.resetLineCounters();
+            service.setCurrentlyAvailable(true);
+        }
+        service.setAvailabilityLevel(currentAvailabilityLevel);
+        service.setEndOfCurrentFailureSection(currentEndTime);
     }
 
-    private double getAvailabilityLevel(double availableLines, int failureLines) {
-        return availableLines / (availableLines + failureLines) * 100;
+    private void processServiceFailureLine(String responseDateAndTime) {
+        service.incrementFailureLineCounter();
+        if (service.isCurrentlyAvailable()) {
+            String startTime = extractCurrentResponseTime(responseDateAndTime);
+            Printer.printAvailabilitySectionBorderTime(startTime);
+            service.setCurrentlyAvailable(false);
+        }
+    }
+
+    private boolean serviceFailure(String statusCode, double responseTime, double acceptableResponseTime) {
+        return statusCode.startsWith(ERROR_CODE_NUMBER) || responseTime > acceptableResponseTime;
     }
 
     private boolean availabilityLevelIsAcceptable(double availability, double acceptableAvailability) {
         return availability >= acceptableAvailability;
     }
 
-    private void printAvailabilityBorderTime(String time) {
-        System.out.printf("%s ", time);
+    private double countAvailabilityLevel() {
+        return (double) service.getAvailableLines()
+                / (service.getAvailableLines() + service.getFailureLines())
+                * 100;
     }
 
-    private void printFormattedAvailabilityLevel(double availabilityLevel) {
-        System.out.println(FORMATTER.format(availabilityLevel));
-    }
-
-    private void resetLineCounters() {
-        this.availableLines = 0;
-        this.failureLines = 0;
+    private String extractCurrentResponseTime(String responseDateAndTime) {
+        return responseDateAndTime.split(":", 2)[1];
     }
 }

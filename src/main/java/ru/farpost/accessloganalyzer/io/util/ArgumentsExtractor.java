@@ -25,19 +25,19 @@ public class ArgumentsExtractor {
 
     private static void extractAvailability(String argument) throws NullPointerException, IllegalArgumentException {
         double availability = Double.parseDouble(argument);
-        if (availability < 0 || availability > 100) {
-            throw new IllegalArgumentException("-u must be a value in [0; 100].");
-        } else {
+        if (availability >= 0 && availability <= 100) {
             arguments.setAvailability(availability);
+        } else {
+            throw new IllegalArgumentException("-u must be a value in [0; 100].");
         }
     }
 
     private static void extractAccessTime(String argument) throws NullPointerException, IllegalArgumentException {
         double responseTime = Double.parseDouble(argument);
-        if (responseTime <= 0) {
-            throw new IllegalArgumentException("-t must be a value greater than 0.");
-        } else {
+        if (responseTime > 0) {
             arguments.setResponseTime(responseTime);
+        } else {
+            throw new IllegalArgumentException("-t must be a value greater than 0.");
         }
     }
 }
