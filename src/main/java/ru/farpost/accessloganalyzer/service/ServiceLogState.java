@@ -8,7 +8,7 @@ import lombok.Setter;
 public class ServiceLogState {
     private int availableLines = 0;
     private int failureLines = 0;
-    private boolean currentlyAvailable = true;
+    private boolean denialSectionStarted = false;
     private double currentAvailabilityLevel = 0;
     private String endOfCurrentFailureSection;
 
@@ -27,7 +27,7 @@ public class ServiceLogState {
 
     public void resetState() {
         resetLineCounters();
-        setCurrentlyAvailable(true);
+        setDenialSectionStarted(false);
     }
 
     public double countAvailabilityLevel() {
