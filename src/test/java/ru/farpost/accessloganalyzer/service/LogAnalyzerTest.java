@@ -20,7 +20,7 @@ public class LogAnalyzerTest {
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream stubOut = new ByteArrayOutputStream();
 
-    private final LogAnalyzer analyzer = new LogAnalyzer();
+    private final LogAnalyzer analyzer = new LogAnalyzer(ARGUMENTS);
 
     @Before
     public void setStubOutputStream() {
@@ -41,7 +41,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -55,7 +55,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "01:01:01 02:02:02 50.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -69,7 +69,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "02:02:02 03:03:03 50.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -83,7 +83,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "03:03:03 03:03:03 0.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -97,7 +97,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "01:01:01 03:03:03 33.3\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -111,7 +111,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "02:02:02 03:03:03 0.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -125,7 +125,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "01:01:01 03:03:03 33.3\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -139,7 +139,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "01:01:01 03:03:03 0.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -153,7 +153,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -167,7 +167,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "01:01:01 02:02:02 50.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -181,7 +181,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "02:02:02 03:03:03 50.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -195,7 +195,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "03:03:03 04:04:04 50.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -209,7 +209,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "04:04:04 04:04:04 0.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -223,7 +223,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "01:01:01 04:04:04 0.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -237,7 +237,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "01:01:01 04:04:04 50.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -251,7 +251,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "02:02:02 04:04:04 33.3\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -265,7 +265,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "03:03:03 04:04:04 0.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -279,7 +279,7 @@ public class LogAnalyzerTest {
         );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "01:01:01 04:04:04 50.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -293,7 +293,7 @@ public class LogAnalyzerTest {
         );
        System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "02:02:02 04:04:04 33.3\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
@@ -308,7 +308,7 @@ public class LogAnalyzerTest {
 
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(ARGUMENTS);
+        analyzer.analyze();
 
         String expected = "01:01:01 02:02:02 50.0\n04:04:04 04:04:04 0.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));

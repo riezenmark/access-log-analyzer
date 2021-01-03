@@ -6,7 +6,7 @@ import ru.farpost.accessloganalyzer.service.LogAnalyzer;
 
 public class AccessLogAnalyzerApplication {
     public static void main(String[] args) {
-        Analyzer analyzer = new LogAnalyzer();
-        analyzer.analyze(ArgumentsExtractor.extract(args));
+        Analyzer analyzer = new LogAnalyzer(ArgumentsExtractor.extract(args));
+        analyzer.analyze();
     }
 }
