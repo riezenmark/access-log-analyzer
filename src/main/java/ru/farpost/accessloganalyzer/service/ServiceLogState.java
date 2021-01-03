@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ServiceState {
+public class ServiceLogState {
     private int availableLines = 0;
     private int failureLines = 0;
     private boolean currentlyAvailable = true;
