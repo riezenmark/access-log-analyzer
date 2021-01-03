@@ -23,13 +23,17 @@ public class LogAnalyzer implements Analyzer {
             reader.lines().forEach(this::processLogLine);
 
             if (!service.isCurrentlyAvailable()) {
-                String endOfCurrentFailureSection = service.getEndOfCurrentFailureSection();
-                double availabilityLevel = countAvailabilityLevel();
-                Printer.printSectionEnding(endOfCurrentFailureSection, availabilityLevel);
+                double finalAvailabilityLevel = countAvailabilityLevel();
+                processEnding(finalAvailabilityLevel);
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    private void processEnding(double availabilityLevel) {
+        String endOfCurrentFailureSection = service.getEndOfCurrentFailureSection();
+        Printer.printSectionEnding(endOfCurrentFailureSection, availabilityLevel);
     }
 
     private void processLogLine(String line) {
@@ -53,9 +57,8 @@ public class LogAnalyzer implements Analyzer {
         service.incrementAvailableLineCounter();
         double currentAvailabilityLevel = countAvailabilityLevel();
         if (availabilityLevelIsAcceptable(currentAvailabilityLevel, arguments.getAcceptableAvailability())) {
-            String endOfCurrentFailureSection = service.getEndOfCurrentFailureSection();
-            double availabilityLevel = service.getAvailabilityLevel();
-            Printer.printSectionEnding(endOfCurrentFailureSection, availabilityLevel);
+            double sectionAvailabilityLevel = service.getAvailabilityLevel();
+            processEnding(sectionAvailabilityLevel);
             service.resetState();
         }
         service.setAvailabilityLevel(currentAvailabilityLevel);
