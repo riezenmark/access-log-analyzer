@@ -11,31 +11,26 @@ import java.io.InputStreamReader;
 public class LogAnalyzer implements Analyzer {
     private static final String ERROR_CODE_NUMBER = "5";
 
-    private final ServiceLogState serviceLogState = new ServiceLogState();
-    private final Arguments arguments;
-
-    public LogAnalyzer(Arguments arguments) {
-        this.arguments = arguments;
-    }
-
     @SneakyThrows
-    public void analyze() {
+    public void analyze(Arguments arguments) {
         @Cleanup BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            reader.lines().forEach(this::processLogLine);
+            ServiceLogState serviceLogState = new ServiceLogState();
+            reader.lines()
+                    .forEach(line -> processLogLine(line, serviceLogState, arguments));
 
             if (!serviceLogState.isCurrentlyAvailable()) {
                 double finalAvailabilityLevel = serviceLogState.countAvailabilityLevel();
-                printProcessedSectionEndingInfo(finalAvailabilityLevel);
+                printProcessedSectionEndingInfo(finalAvailabilityLevel, serviceLogState);
             }
     }
 
-    private void processLogLine(String line) {
+    private void processLogLine(String line, ServiceLogState serviceLogState, Arguments arguments) {
         LogLine logLine = new LogLine(line);
 
-        if (isServiceFailure(logLine, arguments.getAcceptableResponseTime())) {
-            processLogFailureLine(logLine);
+        if (isServiceFailure(logLine, arguments)) {
+            processLogFailureLine(logLine, serviceLogState);
         } else if (!serviceLogState.isCurrentlyAvailable()) {
-            processLogAvailableLine();
+            processLogAvailableLine(serviceLogState, arguments);
         }
         if (!serviceLogState.isCurrentlyAvailable()) {
             String endOfCurrentFailureSection = logLine.getRequestTime();
@@ -43,7 +38,7 @@ public class LogAnalyzer implements Analyzer {
         }
     }
 
-    private void processLogFailureLine(LogLine logLine) {
+    private void processLogFailureLine(LogLine logLine, ServiceLogState serviceLogState) {
         serviceLogState.incrementFailureLineCounter();
         if (serviceLogState.isCurrentlyAvailable()) {
             String startTime = logLine.getRequestTime();
@@ -52,25 +47,25 @@ public class LogAnalyzer implements Analyzer {
         }
     }
 
-    private void processLogAvailableLine() {
+    private void processLogAvailableLine(ServiceLogState serviceLogState, Arguments arguments) {
         serviceLogState.incrementAvailableLineCounter();
         double currentAvailabilityLevel = serviceLogState.countAvailabilityLevel();
         if (isAvailabilityLevelAcceptable(currentAvailabilityLevel, arguments.getAcceptableAvailability())) {
-            printProcessedSectionEndingInfo(serviceLogState.getCurrentAvailabilityLevel());
+            printProcessedSectionEndingInfo(serviceLogState.getCurrentAvailabilityLevel(), serviceLogState);
             serviceLogState.resetState();
         }
         serviceLogState.setCurrentAvailabilityLevel(currentAvailabilityLevel);
     }
 
-    private void printProcessedSectionEndingInfo(double availabilityLevel) {
+    private void printProcessedSectionEndingInfo(double availabilityLevel, ServiceLogState serviceLogState) {
         String endOfCurrentFailureSection = serviceLogState.getEndOfCurrentFailureSection();
         String formattedAvailabilityLevel = DecimalFormatter.format(availabilityLevel);
         System.out.printf("%s %s%n", endOfCurrentFailureSection, formattedAvailabilityLevel);
     }
 
-    private boolean isServiceFailure(LogLine logLine, double acceptableResponseTime) {
+    private boolean isServiceFailure(LogLine logLine, Arguments arguments) {
         return logLine.getStatusCode().startsWith(ERROR_CODE_NUMBER)
-                || logLine.getResponseTime() > acceptableResponseTime;
+                || logLine.getResponseTime() > arguments.getAcceptableResponseTime();
     }
 
     private boolean isAvailabilityLevelAcceptable(double availability, double acceptableAvailability) {
