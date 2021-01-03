@@ -1,10 +1,11 @@
 package ru.farpost.accessloganalyzer.service;
 
+import lombok.Cleanup;
+import lombok.SneakyThrows;
 import ru.farpost.accessloganalyzer.io.Arguments;
 import ru.farpost.accessloganalyzer.util.DecimalFormatter;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class LogAnalyzer implements Analyzer {
@@ -17,26 +18,24 @@ public class LogAnalyzer implements Analyzer {
         this.arguments = arguments;
     }
 
+    @SneakyThrows
     public void analyze() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+        @Cleanup BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             reader.lines().forEach(this::processLogLine);
 
             if (!serviceLogState.isCurrentlyAvailable()) {
                 double finalAvailabilityLevel = serviceLogState.countAvailabilityLevel();
-                processLogLineEnding(finalAvailabilityLevel);
+                printProcessedSectionEndingInfo(finalAvailabilityLevel);
             }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
     }
 
     private void processLogLine(String line) {
         LogLine logLine = new LogLine(line);
 
         if (isServiceFailure(logLine, arguments.getAcceptableResponseTime())) {
-            processServiceFailureLine(logLine);
+            processLogFailureLine(logLine);
         } else if (!serviceLogState.isCurrentlyAvailable()) {
-            processServiceAvailableLine();
+            processLogAvailableLine();
         }
         if (!serviceLogState.isCurrentlyAvailable()) {
             String endOfCurrentFailureSection = logLine.getRequestTime();
@@ -44,7 +43,7 @@ public class LogAnalyzer implements Analyzer {
         }
     }
 
-    private void processServiceFailureLine(LogLine logLine) {
+    private void processLogFailureLine(LogLine logLine) {
         serviceLogState.incrementFailureLineCounter();
         if (serviceLogState.isCurrentlyAvailable()) {
             String startTime = logLine.getRequestTime();
@@ -53,17 +52,17 @@ public class LogAnalyzer implements Analyzer {
         }
     }
 
-    private void processServiceAvailableLine() {
+    private void processLogAvailableLine() {
         serviceLogState.incrementAvailableLineCounter();
         double currentAvailabilityLevel = serviceLogState.countAvailabilityLevel();
         if (isAvailabilityLevelAcceptable(currentAvailabilityLevel, arguments.getAcceptableAvailability())) {
-            processLogLineEnding(serviceLogState.getCurrentAvailabilityLevel());
+            printProcessedSectionEndingInfo(serviceLogState.getCurrentAvailabilityLevel());
             serviceLogState.resetState();
         }
         serviceLogState.setCurrentAvailabilityLevel(currentAvailabilityLevel);
     }
 
-    private void processLogLineEnding(double availabilityLevel) {
+    private void printProcessedSectionEndingInfo(double availabilityLevel) {
         String endOfCurrentFailureSection = serviceLogState.getEndOfCurrentFailureSection();
         String formattedAvailabilityLevel = DecimalFormatter.format(availabilityLevel);
         System.out.printf("%s %s%n", endOfCurrentFailureSection, formattedAvailabilityLevel);
