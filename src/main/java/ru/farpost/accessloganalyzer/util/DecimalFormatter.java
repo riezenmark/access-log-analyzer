@@ -1,8 +1,11 @@
 package ru.farpost.accessloganalyzer.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
+@UtilityClass
 public class DecimalFormatter {
     private static final DecimalFormat FORMATTER;
 

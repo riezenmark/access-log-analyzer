@@ -1,11 +1,13 @@
 package ru.farpost.accessloganalyzer.io.util;
 
+import lombok.experimental.UtilityClass;
 import ru.farpost.accessloganalyzer.io.Arguments;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+@UtilityClass
 public class ArgumentsExtractor {
     private static final Arguments arguments = new Arguments();
     private static final Map<String, Consumer<String>> extractor = new HashMap<>();

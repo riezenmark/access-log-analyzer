@@ -32,11 +32,6 @@ public class LogAnalyzer implements Analyzer {
         }
     }
 
-    private void processEnding(double availabilityLevel) {
-        String endOfCurrentFailureSection = service.getEndOfCurrentFailureSection();
-        Printer.printSectionEnding(endOfCurrentFailureSection, availabilityLevel);
-    }
-
     private void processLogLine(String line) {
         parser.parseLine(line);
         String statusCode = parser.extractStatusCode();
@@ -54,6 +49,16 @@ public class LogAnalyzer implements Analyzer {
         }
     }
 
+    private void processServiceFailureLine() {
+        service.incrementFailureLineCounter();
+        String requestDateAndTime = parser.extractRequestDateAndTime();
+        if (service.isCurrentlyAvailable()) {
+            String startTime = parser.extractRequestTime(requestDateAndTime);
+            Printer.printTime(startTime);
+            service.setCurrentlyAvailable(false);
+        }
+    }
+
     private void processServiceAvailableLine() {
         service.incrementAvailableLineCounter();
         double currentAvailabilityLevel = countAvailabilityLevel();
@@ -65,14 +70,9 @@ public class LogAnalyzer implements Analyzer {
         service.setAvailabilityLevel(currentAvailabilityLevel);
     }
 
-    private void processServiceFailureLine() {
-        service.incrementFailureLineCounter();
-        String requestDateAndTime = parser.extractRequestDateAndTime();
-        if (service.isCurrentlyAvailable()) {
-            String startTime = parser.extractRequestTime(requestDateAndTime);
-            Printer.printTime(startTime);
-            service.setCurrentlyAvailable(false);
-        }
+    private void processEnding(double availabilityLevel) {
+        String endOfCurrentFailureSection = service.getEndOfCurrentFailureSection();
+        Printer.printSectionEnding(endOfCurrentFailureSection, availabilityLevel);
     }
 
     private boolean serviceFailure(String statusCode, double responseTime, double acceptableResponseTime) {
