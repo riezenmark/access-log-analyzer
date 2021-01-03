@@ -11,8 +11,8 @@ public class ArgumentsExtractorTest {
 
         Arguments extractedArguments = ArgumentsExtractor.extract(args);
 
-        Assert.assertEquals(99.9, extractedArguments.getAvailability(), 0.01);
-        Assert.assertEquals(45, extractedArguments.getResponseTime(), 0.01);
+        Assert.assertEquals(99.9, extractedArguments.getAcceptableAvailability(), 0.01);
+        Assert.assertEquals(45, extractedArguments.getAcceptableResponseTime(), 0.01);
     }
 
     @Test(expected = IllegalArgumentException.class)

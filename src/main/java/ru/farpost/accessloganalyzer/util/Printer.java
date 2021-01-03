@@ -1,12 +1,12 @@
 package ru.farpost.accessloganalyzer.util;
 
 public class Printer {
-    public static void printAvailabilitySectionBorderTime(String time) {
+    public static void printTime(String time) {
         System.out.printf("%s ", time);
     }
 
-    public static void printAvailabilityLevel(double availabilityLevel) {
+    public static void printSectionEnding(String endOfSectionTime, double availabilityLevel) {
         String formattedAvailabilityLevel = DecimalFormatter.format(availabilityLevel);
-        System.out.println(formattedAvailabilityLevel);
+        System.out.printf("%s %s%n", endOfSectionTime, formattedAvailabilityLevel);
     }
 }

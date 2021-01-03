@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Arguments {
-    private double availability;
-    private double responseTime;
+    private double acceptableAvailability;
+    private double acceptableResponseTime;
 }

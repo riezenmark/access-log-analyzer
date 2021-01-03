@@ -24,4 +24,9 @@ public class ServiceState {
         availableLines = 0;
         failureLines = 0;
     }
+
+    public void resetState() {
+        resetLineCounters();
+        setCurrentlyAvailable(true);
+    }
 }

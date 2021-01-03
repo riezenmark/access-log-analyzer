@@ -26,7 +26,7 @@ public class ArgumentsExtractor {
     private static void extractAvailability(String argument) throws NullPointerException, IllegalArgumentException {
         double availability = Double.parseDouble(argument);
         if (availability >= 0 && availability <= 100) {
-            arguments.setAvailability(availability);
+            arguments.setAcceptableAvailability(availability);
         } else {
             throw new IllegalArgumentException("-u must be a value in [0; 100].");
         }
@@ -35,7 +35,7 @@ public class ArgumentsExtractor {
     private static void extractAccessTime(String argument) throws NullPointerException, IllegalArgumentException {
         double responseTime = Double.parseDouble(argument);
         if (responseTime > 0) {
-            arguments.setResponseTime(responseTime);
+            arguments.setAcceptableResponseTime(responseTime);
         } else {
             throw new IllegalArgumentException("-t must be a value greater than 0.");
         }

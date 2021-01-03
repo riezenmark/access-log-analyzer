@@ -11,16 +11,16 @@ import java.io.*;
 public class LogAnalyzerTest {
     private static final Arguments arguments = new Arguments();
 
+    static {
+        arguments.setAcceptableResponseTime(45);
+        arguments.setAcceptableAvailability(66);
+    }
+
     private final InputStream standardIn = System.in;
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream stubOut = new ByteArrayOutputStream();
 
-    private final LogAnalyzer analyzer = new LogAnalyzer();
-
-    static {
-        arguments.setResponseTime(45);
-        arguments.setAvailability(66);
-    }
+    private final LogAnalyzer analyzer = new LogAnalyzer(arguments);
 
     @Before
     public void setStubOutputStream() {
@@ -41,7 +41,7 @@ public class LogAnalyzerTest {
               + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "",
@@ -57,7 +57,7 @@ public class LogAnalyzerTest {
               + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "01:01:01 02:02:02 50.0\n",
@@ -73,7 +73,7 @@ public class LogAnalyzerTest {
               + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "02:02:02 03:03:03 50.0\n",
@@ -89,7 +89,7 @@ public class LogAnalyzerTest {
               + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "03:03:03 03:03:03 0.0\n",
@@ -105,7 +105,7 @@ public class LogAnalyzerTest {
               + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "01:01:01 03:03:03 33.3\n",
@@ -121,7 +121,7 @@ public class LogAnalyzerTest {
               + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "02:02:02 03:03:03 0.0\n",
@@ -137,7 +137,7 @@ public class LogAnalyzerTest {
               + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "01:01:01 03:03:03 33.3\n",
@@ -153,7 +153,7 @@ public class LogAnalyzerTest {
               + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "01:01:01 03:03:03 0.0\n",
@@ -170,7 +170,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 31.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "",
@@ -187,7 +187,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "01:01:01 02:02:02 50.0\n",
@@ -204,7 +204,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "02:02:02 03:03:03 50.0\n",
@@ -221,7 +221,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "03:03:03 04:04:04 50.0\n",
@@ -238,7 +238,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "04:04:04 04:04:04 0.0\n",
@@ -255,7 +255,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "01:01:01 04:04:04 0.0\n",
@@ -272,7 +272,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "01:01:01 04:04:04 50.0\n",
@@ -289,7 +289,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "02:02:02 04:04:04 33.3\n",
@@ -306,7 +306,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "03:03:03 04:04:04 0.0\n",
@@ -323,7 +323,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "01:01:01 04:04:04 50.0\n",
@@ -340,7 +340,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "02:02:02 04:04:04 33.3\n",
@@ -357,7 +357,7 @@ public class LogAnalyzerTest {
               + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
-        analyzer.analyze(arguments);
+        analyzer.analyze();
 
         Assert.assertEquals(
                 "01:01:01 02:02:02 50.0\n"
