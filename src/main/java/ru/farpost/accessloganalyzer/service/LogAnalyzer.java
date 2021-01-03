@@ -1,7 +1,6 @@
 package ru.farpost.accessloganalyzer.service;
 
 import ru.farpost.accessloganalyzer.io.Arguments;
-import ru.farpost.accessloganalyzer.util.LogLineParser;
 import ru.farpost.accessloganalyzer.util.Printer;
 
 import java.io.BufferedReader;
@@ -12,6 +11,8 @@ public class LogAnalyzer implements Analyzer {
     private static final String ERROR_CODE_NUMBER = "5";
 
     private final ServiceState service = new ServiceState();
+    private final LogLineParser parser = new LogLineParser();
+
     private final Arguments arguments;
 
     public LogAnalyzer(Arguments arguments) {
@@ -37,18 +38,18 @@ public class LogAnalyzer implements Analyzer {
     }
 
     private void processLogLine(String line) {
-        String[] columns = line.split(" ");
-        String statusCode = columns[8];
-        double responseTime = LogLineParser.extractResponseTime(columns[10]);
+        parser.parseLine(line);
+        String statusCode = parser.extractStatusCode();
+        double responseTime = parser.extractResponseTime();
 
         if (serviceFailure(statusCode, responseTime, arguments.getAcceptableResponseTime())) {
-            processServiceFailureLine(columns[3]);
+            processServiceFailureLine();
         } else if (!service.isCurrentlyAvailable()) {
             processServiceAvailableLine();
         }
         if (!service.isCurrentlyAvailable()) {
-            String requestDateAndTime = columns[3];
-            String endOfCurrentFailureSection = LogLineParser.extractCurrentRequestTime(requestDateAndTime);
+            String requestDateAndTime = parser.extractRequestDateAndTime();
+            String endOfCurrentFailureSection = parser.extractRequestTime(requestDateAndTime);
             service.setEndOfCurrentFailureSection(endOfCurrentFailureSection);
         }
     }
@@ -64,10 +65,11 @@ public class LogAnalyzer implements Analyzer {
         service.setAvailabilityLevel(currentAvailabilityLevel);
     }
 
-    private void processServiceFailureLine(String requestDateAndTime) {
+    private void processServiceFailureLine() {
         service.incrementFailureLineCounter();
+        String requestDateAndTime = parser.extractRequestDateAndTime();
         if (service.isCurrentlyAvailable()) {
-            String startTime = LogLineParser.extractCurrentRequestTime(requestDateAndTime);
+            String startTime = parser.extractRequestTime(requestDateAndTime);
             Printer.printTime(startTime);
             service.setCurrentlyAvailable(false);
         }

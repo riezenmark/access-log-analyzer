@@ -35,10 +35,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenAllAreAvailableThenNoOutput() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "200", "200"},
+                new String[] {"33.02583", "35.249855", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -49,10 +49,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenFirstIsUnavailableThenFirstTwoAvailabilityIs50() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 500 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"500", "200", "200"},
+                new String[] {"33.02583", "35.249855", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -63,10 +63,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenSecondIsUnavailableThenSecondTwoAvailabilityIs50() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 75.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "200", "200"},
+                new String[] {"33.02583", "75.249855", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -77,10 +77,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenLastIsUnavailableThenLastAvailabilityIs0() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 15.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "200", "500"},
+                new String[] {"33.02583", "15.249855", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -91,10 +91,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenFirstAndSecondAreUnavailableThenAllAvailabilityIs33() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 500 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 95.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"500", "200", "200"},
+                new String[] {"33.02583", "95.249855", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -105,10 +105,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenSecondAndThirdAreUnavailableThenSecondTwoAvailabilityIs0() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 95.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "200", "500"},
+                new String[] {"33.02583", "95.249855", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -119,10 +119,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenFirstAndThirdAreUnavailableThenAllAvailabilityIs33() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 83.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 15.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "200", "500"},
+                new String[] {"83.02583", "15.249855", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -133,10 +133,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenAllAreUnavailableThenAllAvailabilityIs0() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 83.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 500 2 94.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "500", "500"},
+                new String[] {"83.02583", "94.249855", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -147,11 +147,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenAllOfFourAreAvailableThenNoOutput() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 31.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "200", "200", "200"},
+                new String[] {"33.02583", "35.249855", "26.783072", "31.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -162,11 +161,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenFirstOfFourIsUnavailableThenFirstTwoAvailabilityIs50() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 500 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"500", "200", "200", "200"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -177,11 +175,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenSecondOfFourIsUnavailableThenSecondTwoAvailabilityIs50() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 500 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "500", "200", "200"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -192,11 +189,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenThirdOfFourIsUnavailableThenLastTwoAvailabilityIs50() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "200", "500", "200"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -207,11 +203,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenFourthOfFourIsUnavailableThenLastAvailabilityIs0() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "200", "200", "500"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -222,11 +217,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenAllOfFourAreUnavailableThenFirstTwoAvailabilityIs50() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 500 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 500 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"500", "500", "500", "500"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -237,11 +231,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenFirstTwoOfFourAreUnavailableThenAllAvailabilityIs50() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 500 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 500 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"500", "500", "200", "200"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -252,11 +245,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenSecondTwoOfFourAreUnavailableThenAvailabilitySinceTwoIs33() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 500 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "500", "500", "200"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -267,11 +259,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenLastTwoOfFourAreUnavailableThenLastTwoAvailabilityIs0() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"200", "200", "500", "500"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -282,11 +273,10 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenFirstAndThirdOfFourAreUnavailableThenAllAvailabilityIs50() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 500 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"500", "200", "500", "200"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
@@ -297,12 +287,11 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenSecondAndLastOfFourAreUnavailableThenAvailabilitySinceTwoIs33() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 200 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 500 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
-        System.setIn(new ByteArrayInputStream(log.getBytes()));
+        String log = getStubLog(
+                new String[] {"200", "500", "200", "500"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
+       System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
 
@@ -312,16 +301,38 @@ public class LogAnalyzerTest {
 
     @Test
     public void whenFirstAndLastOfFourAreUnavailableThenFirstTwoAvailabilityIs50AndLastAvailabilityIs0() {
-        String log =
-                "test - - [test:01:01:01 +1] \"PUT test=6c21c8f6 HTTP/1.1\" 500 2 33.02583 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:02:02:02 +1] \"PUT test=cceed874 HTTP/1.1\" 200 2 35.249855 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:03:03:03 +1] \"PUT test=4b84a53c HTTP/1.1\" 200 2 26.783072 \"-\" \"@test\" prio:0\n"
-              + "test - - [test:04:04:04 +1] \"PUT test=4b84a53c HTTP/1.1\" 500 2 26.783072 \"-\" \"@test\" prio:0\n";
+        String log = getStubLog(
+                new String[] {"500", "200", "200", "500"},
+                new String[] {"33.02583", "35.249855", "26.783072", "26.783072"}
+        );
+
         System.setIn(new ByteArrayInputStream(log.getBytes()));
 
         analyzer.analyze();
 
         String expected = "01:01:01 02:02:02 50.0\n04:04:04 04:04:04 0.0\n";
         Assert.assertEquals(expected, new String(stubOut.toByteArray()));
+    }
+
+    private String getStubLog(String[] statusCodes, String[] responseTimes) {
+        String result;
+        if (statusCodes.length == responseTimes.length) {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < statusCodes.length; i++) {
+                builder.append("test - - [test")
+                        .append(":0").append(i + 1)
+                        .append(":0").append(i + 1)
+                        .append(":0").append(i + 1)
+                        .append(" +1] \"PUT test=someHash HTTP/1.1\" ")
+                        .append(statusCodes[i])
+                        .append(" 2 ")
+                        .append(responseTimes[i])
+                        .append(" \"-\" \"@test\" prio:0\n");
+            }
+            result = builder.toString();
+        } else {
+            result = "statusCodes and responseTime lengths are not equal.";
+        }
+        return result;
     }
 }
