@@ -11,31 +11,26 @@ import java.io.InputStreamReader;
 public class LogAnalyzer implements Analyzer {
     private static final String ERROR_CODE_PREFIX = "5";
 
-    private final ServiceLogState serviceLogState = new ServiceLogState();
-    private final Arguments arguments;
-
-    public LogAnalyzer(Arguments arguments) {
-        this.arguments = arguments;
-    }
-
     @SneakyThrows
-    public void analyze() {
+    public void analyze(Arguments arguments) {
         @Cleanup BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        reader.lines().forEach(this::processLogLine);
+        ServiceLogState serviceLogState = new ServiceLogState();
+        reader.lines()
+                .forEach(line -> processLogLine(line, serviceLogState, arguments));
 
         if (serviceLogState.isDenialSectionStarted()) {
             double finalAvailabilityLevel = serviceLogState.countAvailabilityLevel();
-            printLineLogResult(finalAvailabilityLevel);
+            printLineLogResult(serviceLogState, finalAvailabilityLevel);
         }
     }
 
-    private void processLogLine(String line) {
+    private void processLogLine(String line, ServiceLogState serviceLogState, Arguments arguments) {
         LogLine logLine = new LogLine(line);
 
         if (isServiceFailure(logLine, arguments.getAcceptableResponseTime())) {
-            processLogFailureLine(logLine);
+            processLogFailureLine(logLine, serviceLogState);
         } else if (serviceLogState.isDenialSectionStarted()) {
-            processLogAvailableLine();
+            processLogAvailableLine(serviceLogState, arguments);
         }
         if (serviceLogState.isDenialSectionStarted()) {
             String endOfCurrentFailureSection = logLine.getRequestTime();
@@ -43,7 +38,7 @@ public class LogAnalyzer implements Analyzer {
         }
     }
 
-    private void processLogFailureLine(LogLine logLine) {
+    private void processLogFailureLine(LogLine logLine, ServiceLogState serviceLogState) {
         serviceLogState.incrementFailureLineCounter();
         if (!serviceLogState.isDenialSectionStarted()) {
             String startTime = logLine.getRequestTime();
@@ -52,17 +47,17 @@ public class LogAnalyzer implements Analyzer {
         }
     }
 
-    private void processLogAvailableLine() {
+    private void processLogAvailableLine(ServiceLogState serviceLogState, Arguments arguments) {
         serviceLogState.incrementAvailableLineCounter();
         double currentAvailabilityLevel = serviceLogState.countAvailabilityLevel();
         if (isAvailabilityLevelAcceptable(currentAvailabilityLevel, arguments.getAcceptableAvailability())) {
-            printLineLogResult(serviceLogState.getCurrentAvailabilityLevel());
+            printLineLogResult(serviceLogState, serviceLogState.getCurrentAvailabilityLevel());
             serviceLogState.resetState();
         }
         serviceLogState.setCurrentAvailabilityLevel(currentAvailabilityLevel);
     }
 
-    private void printLineLogResult(double availabilityLevel) {
+    private void printLineLogResult(ServiceLogState serviceLogState, double availabilityLevel) {
         String endOfCurrentFailureSection = serviceLogState.getEndOfCurrentFailureSection();
         String formattedAvailabilityLevel = DecimalFormatter.format(availabilityLevel);
         System.out.printf("%s %s%n", endOfCurrentFailureSection, formattedAvailabilityLevel);
