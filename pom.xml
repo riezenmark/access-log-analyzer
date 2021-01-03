@@ -21,6 +21,11 @@
             <version>1.18.16</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <version>1.0</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -31,6 +36,7 @@
     </dependencies>
 
     <build>
+        <finalName>${project.name}-thread-safe</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

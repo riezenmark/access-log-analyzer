@@ -2,12 +2,14 @@ package ru.farpost.accessloganalyzer.service;
 
 import lombok.Cleanup;
 import lombok.SneakyThrows;
+import net.jcip.annotations.ThreadSafe;
 import ru.farpost.accessloganalyzer.io.Arguments;
 import ru.farpost.accessloganalyzer.util.DecimalFormatter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+@ThreadSafe
 public class LogAnalyzer implements Analyzer {
     private static final String ERROR_CODE_PREFIX = "5";
 
