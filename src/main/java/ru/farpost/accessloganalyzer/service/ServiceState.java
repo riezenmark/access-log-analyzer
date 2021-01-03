@@ -9,7 +9,7 @@ public class ServiceState {
     private int availableLines = 0;
     private int failureLines = 0;
     private boolean currentlyAvailable = true;
-    private double availabilityLevel = 0;
+    private double currentAvailabilityLevel = 0;
     private String endOfCurrentFailureSection;
 
     public void incrementAvailableLineCounter() {
@@ -28,5 +28,9 @@ public class ServiceState {
     public void resetState() {
         resetLineCounters();
         setCurrentlyAvailable(true);
+    }
+
+    public double countAvailabilityLevel() {
+        return (double) availableLines / (availableLines + failureLines) * 100;
     }
 }

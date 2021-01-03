@@ -5,27 +5,27 @@ import ru.farpost.accessloganalyzer.io.Arguments;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 @UtilityClass
 public class ArgumentsExtractor {
-    private static final Arguments arguments = new Arguments();
-    private static final Map<String, Consumer<String>> extractor = new HashMap<>();
+    private static final Map<String, BiConsumer<String, Arguments>> EXTRACTOR = new HashMap<>();
 
     static {
-        extractor.put("-u", ArgumentsExtractor::extractAvailability);
-        extractor.put("-t", ArgumentsExtractor::extractAccessTime);
+        EXTRACTOR.put("-u", ArgumentsExtractor::extractAvailability);
+        EXTRACTOR.put("-t", ArgumentsExtractor::extractAccessTime);
     }
 
     public static Arguments extract(String[] args) {
+        Arguments arguments = new Arguments();
         for (int i = 0; i < args.length; i++) {
-            extractor.get(args[i])
-                    .accept(args[++i]);
+            EXTRACTOR.get(args[i])
+                    .accept(args[++i], arguments);
         }
         return arguments;
     }
 
-    private static void extractAvailability(String argument) throws NullPointerException, IllegalArgumentException {
+    private static void extractAvailability(String argument, Arguments arguments) throws NullPointerException, IllegalArgumentException {
         double availability = Double.parseDouble(argument);
         if (availability >= 0 && availability <= 100) {
             arguments.setAcceptableAvailability(availability);
@@ -34,7 +34,7 @@ public class ArgumentsExtractor {
         }
     }
 
-    private static void extractAccessTime(String argument) throws NullPointerException, IllegalArgumentException {
+    private static void extractAccessTime(String argument, Arguments arguments) throws NullPointerException, IllegalArgumentException {
         double responseTime = Double.parseDouble(argument);
         if (responseTime > 0) {
             arguments.setAcceptableResponseTime(responseTime);

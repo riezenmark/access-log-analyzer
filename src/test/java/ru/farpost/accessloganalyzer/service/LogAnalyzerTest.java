@@ -9,18 +9,18 @@ import ru.farpost.accessloganalyzer.io.Arguments;
 import java.io.*;
 
 public class LogAnalyzerTest {
-    private static final Arguments arguments = new Arguments();
+    private static final Arguments ARGUMENTS = new Arguments();
 
     static {
-        arguments.setAcceptableResponseTime(45);
-        arguments.setAcceptableAvailability(66);
+        ARGUMENTS.setAcceptableResponseTime(45);
+        ARGUMENTS.setAcceptableAvailability(66);
     }
 
     private final InputStream standardIn = System.in;
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream stubOut = new ByteArrayOutputStream();
 
-    private final LogAnalyzer analyzer = new LogAnalyzer(arguments);
+    private final LogAnalyzer analyzer = new LogAnalyzer(ARGUMENTS);
 
     @Before
     public void setStubOutputStream() {
