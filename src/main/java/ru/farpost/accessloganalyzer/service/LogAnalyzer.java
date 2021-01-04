@@ -11,6 +11,9 @@ import java.io.InputStreamReader;
 public class LogAnalyzer implements Analyzer {
     private static final String ERROR_CODE_PREFIX = "5";
 
+    //Можно добиться stateless подхода, добавив эти константы в метод analyze() как аргументы
+    //или локальные объекты, что позволит добиться потокобезопасности.
+    //Потокобезопасный вариант см. в ветке https://github.com/riezenmark/access-log-analyzer/tree/thread-safe
     private final ServiceLogState serviceLogState = new ServiceLogState();
     private final Arguments arguments;
 
