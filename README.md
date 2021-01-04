@@ -21,3 +21,5 @@ $ cat access.log | java -Xmx512M -jar analyze -u 99.9 -t 45
 13:32:26	13:33:15	94.5
 15:23:02	15:23:08	99.8
 ```
+---
+_See main version in [main branch](https://github.com/riezenmark/access-log-analyzer/tree/main/)_
